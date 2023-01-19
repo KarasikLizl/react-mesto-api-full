@@ -11,9 +11,11 @@ import { createUser, login } from './controllers/users.js';
 import { auth } from './middlewares/auth.js';
 import { errorHandler } from './middlewares/error-handler.js';
 import { requestLogger, errorLogger } from './middlewares/logger.js';
+import cors from 'cors';
 
 const __dirname = path.resolve();
 const app = express();
+app.use(cors());
 const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
 
 app.use(express.static(path.join(__dirname, 'public')));
