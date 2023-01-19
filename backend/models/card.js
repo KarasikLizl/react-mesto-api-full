@@ -1,15 +1,20 @@
 import mongoose from 'mongoose';
+import { urlRegExp } from '../constants/validator.js';
 
 const cardSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    minlenght: 2,
-    maxlenght: 30,
+    minlength: 2,
+    maxlength: 30,
   },
   link: {
     type: String,
     required: true,
+    validate: {
+      validator: (v) => urlRegExp.test(v),
+      message: 'Поле должно быть валидным url-адресом.',
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
@@ -17,12 +22,12 @@ const cardSchema = new mongoose.Schema({
   },
   likes: {
     default: [],
-    type: mongoose.Schema.Types.Array
+    type: mongoose.Schema.Types.Array,
   },
   createdAt: {
     type: Date,
-    default: Date.now
-  }
-})
+    default: Date.now,
+  },
+});
 
 export default mongoose.model('card', cardSchema);

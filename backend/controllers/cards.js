@@ -1,97 +1,113 @@
-import cardSchema from "../models/card.js";
+import cardSchema from '../models/card.js';
+import { OK } from '../constants/errors.js';
 
-export const getCards = (res) => {
-  cardSchema.find({})
+import BadRequestError from '../errors/bad_req.js';
+import NotFoundError from '../errors/not_found.js';
+import ForbiddenError from '../errors/forbidden.js';
+
+export const getCards = (req, res, next) => {
+  cardSchema
+    .find({})
     .then((cards) => {
-      res.status(200).send(cards);
+      res.status(OK).send(cards);
     })
-    .catch(res.status(500).send({message: 'Ошибка на сервере'}))
+    .catch((err) => {
+      next(err);
+    });
 };
 
-export const createCard = (req, res) => {
+export const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   cardSchema
     .create({ name, link, owner })
     .then((card) => {
-      res.status(200).send(card);
+      res.status(OK).send(card);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: "Необходимо проверить заполненные поля" });
+        next(new BadRequestError('Введены некорректные данные'));
       } else {
-        res.status(500).send( {message: "Ошибка на сервере"} )
-      }
-    })
-};
-
-export const deleteCard = (req, res) => {
-  cardSchema.findById(req.params.cardId)
-    .orFail(() => {
-      throw new Error("IncorrectId");
-    })
-    .then((card) => {
-      if (card.owner._id.toString() === req.user._id) {
-        cardSchema.deleteOne(card).then(() => {
-          return res.status(200).send({ message: "Карточка удалена" });
-        });
-      } else {
-        res.status(403).send({ message: "Вы не можете удалить эту карточку" });
-      }
-    })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        return res.status(400).send({ message: "Карточка не найдена" });
-      } else if (err.message === "IncorrectId") {
-        return res.status(404).send({ message: "Карточка по этому id не найдена" });
-      } else {
-        res.status(500).send( {message: "Ошибка на сервере"} )
+        next(err);
       }
     });
 };
 
-export const putLikeCard = (req, res) => {
-  cardSchema.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-    { new: true },
-  )
+export const deleteCard = (req, res, next) => {
+  cardSchema
+    .findById(req.params.cardId)
     .orFail(() => {
       throw new Error('IncorrectId');
     })
     .then((card) => {
-      res.status(200).send(card);
+      if (card.owner._id.toString() === req.user._id) {
+        cardSchema.deleteOne(card).then(() => {
+          res.status(OK).send({ message: 'Карточка удалена' });
+        });
+      } else {
+        throw new ForbiddenError('Вы не можете удалить эту карточку');
+      }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: "Карточка не найдена" });
+        next(new BadRequestError('Карточка не найдена'));
       } else if (err.message === 'IncorrectId') {
-        res.status(404).send({ message: "Карточка по этому id не найдена" });
+        next(new NotFoundError('Карточка по этому id не найдена'));
       } else {
-        res.status(500).send( {message: "Ошибка на сервере"} )
+        next(err);
       }
-    })
+    });
 };
 
-export const deleteLikeCard = (req, res) => {
-  cardSchema.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: req.user._id } }, // убрать _id из массива
-    { new: true },
-  )
+export const putLikeCard = (req, res, next) => {
+  cardSchema
+    .findByIdAndUpdate(
+      req.params.cardId,
+      { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+      { new: true },
+    )
     .orFail(() => {
       throw new Error('IncorrectId');
     })
     .then((card) => {
-      res.status(200).send(card);
+      res.status(OK).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: "Карточка не найдена" });
+        next(new BadRequestError('Карточка не найдена'));
       } else if (err.message === 'IncorrectId') {
-        res.status(404).send({ message: "Карточка по этому id не найдена" });
+        next(new NotFoundError('Карточка по этому id не найдена'));
       } else {
-        res.status(500).send( {message: "Ошибка на сервере"} )
+        next(err);
       }
     })
+    .catch(next);
+};
+
+export const deleteLikeCard = (req, res, next) => {
+  cardSchema
+    .findByIdAndUpdate(
+      req.params.cardId,
+      { $addToSet: { likes: req.user._id } },
+      { new: true },
+    )
+    .orFail(() => {
+      throw new Error('IncorrectId');
+    })
+    .then((card) => {
+      if (card.owner._id.toString() === req.user._id) {
+        cardSchema.deleteOne(card).then(() => {
+          res.status(OK).send({ message: 'Карточка удалена' });
+        });
+      } else {
+        next(new ForbiddenError('Вы не можете удалить чужую карточку'));
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Карточка не найдена'));
+      } else if (err.message === 'IncorrectId') {
+        next(new NotFoundError('Карточка по этому Id не найдена'));
+      } else next(err);
+    });
 };
