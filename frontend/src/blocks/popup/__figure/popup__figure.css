@@ -1,0 +1,11 @@
+.popup__figure {
+    margin: 0;
+    position: relative;
+}
+
+@media (max-width: 767px) {
+    .popup__figure {
+        margin-left: 40px;
+        margin-right: 40px;
+    }
+}

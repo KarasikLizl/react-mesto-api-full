@@ -1,0 +1,20 @@
+.form__submit-button_auth {
+  margin: 216px auto 0;
+  background-color: #FFF;
+  color: #000;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 21.78px;
+}
+
+.form__submit-button:hover{
+  background-color: #FFF;
+  opacity: .85;
+}
+
+@media (max-width: 767px) {
+  .form__submit-button {
+    margin-top: 173px;
+    font-size: 16px;
+  }
+}

@@ -1,0 +1,14 @@
+.form__input_type_error {
+    border-bottom: 1px solid #FF0000;
+    margin-bottom: 0px;
+}
+
+.form__input_type_error:last-of-type {
+    margin-bottom: 5px;
+}
+
+@media (max-width: 767px) {
+    .form__input_type_error {
+        max-width: 238px;
+    }
+}

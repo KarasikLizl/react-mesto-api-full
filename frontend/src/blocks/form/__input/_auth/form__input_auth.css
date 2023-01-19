@@ -1,0 +1,17 @@
+.form__input_auth {
+  background: transparent;
+  border-bottom: solid 2px #CCC;
+  display: block;
+  width: 100%;
+  color: #FFF;
+}
+
+.form__input_auth:last-of-type {
+  margin-bottom: 0;
+}
+
+@media (max-width: 767px) {
+  .form__input_auth {
+    max-width: 260px;
+  }
+}

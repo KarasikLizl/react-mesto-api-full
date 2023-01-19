@@ -1,0 +1,12 @@
+.form__subtitle {
+  font-size: 14px;
+  line-height: 17px;
+  font-weight: 400;
+  margin: 15px auto 0;
+}
+
+@media (max-width: 767px) {
+  .form__subtitle {
+    margin-bottom: 20px;
+  }
+}

@@ -1,0 +1,11 @@
+.form__submit-button_invalid {
+    border: 1px solid rgba(0, 0, 0, .2);
+    color: rgba(0, 0, 0, .2);
+    border-radius: 2px;
+    background-color: #FFF;
+}
+
+.form__submit-button_invalid:hover {
+    opacity: 1;
+    background-color: #FFF;
+}

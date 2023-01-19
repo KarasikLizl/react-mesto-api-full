@@ -1,0 +1,15 @@
+.popup__close-button_type_photo {
+  top: -40px;
+  left: calc(100% + 8px);  
+}
+
+@media (max-width: 767px) {
+    .popup__close-button_type_photo {
+        width: 20px;
+        height: 20px;
+        background-position: center;
+        background-size: contain;
+        left: calc(100% - 20px);
+        top: -36px;
+    }
+}

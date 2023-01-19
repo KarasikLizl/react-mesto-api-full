@@ -1,0 +1,10 @@
+.card__like-number {
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 400;
+  color: #000;
+  margin-top: 3px;
+  padding: 0;
+  height: 13px;
+  text-align: center;
+}
