@@ -7,11 +7,6 @@
   line-height: 21.78px;
 }
 
-.form__submit-button:hover{
-  background-color: #FFF;
-  opacity: .85;
-}
-
 @media (max-width: 767px) {
   .form__submit-button {
     margin-top: 173px;

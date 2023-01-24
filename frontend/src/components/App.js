@@ -1,26 +1,26 @@
-import "../index.css";
-import { useState, useEffect, useCallback } from "react";
-import { Route, Switch, useHistory, Redirect } from "react-router-dom";
+import '../index.css';
+import { useState, useEffect, useCallback } from 'react';
+import { Route, Switch, useHistory, Redirect } from 'react-router-dom';
 
-import Header from "../components/Header";
-import Main from "../components/Main";
-import PopupWithForm from "./PopupWithForm";
-import ImagePopup from "./ImagePopup";
-import InfoTooltip from "./InfoTooltip";
-import EditProfilePopup from "./EditProfilePopup";
-import EditAvatarPopup from "./EditAvatarPopup";
-import AddPlacePopup from "./AddPlacePopup";
-import ProtectedRoute from "./ProtectedRoute";
+import Header from '../components/Header';
+import Main from '../components/Main';
+import PopupWithForm from './PopupWithForm';
+import ImagePopup from './ImagePopup';
+import InfoTooltip from './InfoTooltip';
+import EditProfilePopup from './EditProfilePopup';
+import EditAvatarPopup from './EditAvatarPopup';
+import AddPlacePopup from './AddPlacePopup';
+import ProtectedRoute from './ProtectedRoute';
 
-import api from "../utils/Api";
-import { register, authorize, checkToken } from "../utils/auth";
-import CurrentUserContext from "../../src/contexts/CurrentUserContext";
+import api from '../utils/Api';
+import { register, authorize, checkToken } from '../utils/auth';
+import CurrentUserContext from '../../src/contexts/CurrentUserContext';
 
-import Login from "./Login";
-import Register from "./Register";
+import Login from './Login';
+import Register from './Register';
 
-import popupFail from "../images/popup-fail.svg";
-import popupSucsess from "../images/popup-sucsess.svg";
+import popupFail from '../images/popup-fail.svg';
+import popupSucsess from '../images/popup-sucsess.svg';
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
@@ -29,8 +29,8 @@ function App() {
   const [isConfirmationPopupOpen, setIsConfirmationPopupOpen] = useState(false);
   const [isInfoToolTipOpened, setInfoToolTipOpened] = useState({
     opened: false,
-    text: "",
-    statusImage: "",
+    text: '',
+    statusImage: '',
   });
 
   const [selectedCard, setSelectedCard] = useState({});
@@ -38,34 +38,9 @@ function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [userEmail, setUserEmail] = useState("");
+  const [userEmail, setUserEmail] = useState('');
   const history = useHistory();
-
-  useEffect(() => {
-    if (loggedIn) {
-      api
-        .getUserInfo()
-        .then((currentUser) => {
-          setCurrentUser(currentUser);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
-  }, [loggedIn]);
-
-  useEffect(() => {
-    if (loggedIn) {
-      api
-        .getInitialCards()
-        .then((cards) => {
-          setCards(cards);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
-  }, [loggedIn]);
+  const [token, setToken] = useState('');
 
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(!isEditProfilePopupOpen);
@@ -83,6 +58,7 @@ function App() {
     setSelectedCard(card);
     setIsSelectedCardOpen(!isSelectedCardOpen);
   }
+
   //Редактирование профиля
   function handleUpdateUser(userInfo) {
     api
@@ -121,10 +97,10 @@ function App() {
   }
   //Взаимодействие с карточками
   function handleCardLike(card) {
-    const isLiked = card.likes.some((i) => i._id === currentUser._id);
+    const isLiked = card.likes.find((id) => id === currentUser._id);
 
     api
-      .changeLikeCardStatus(card._id, !isLiked)
+      .changeLikeCardStatus(card._id, isLiked)
       .then((newCard) => {
         setCards((state) =>
           state.map((c) => (c._id === card._id ? newCard : c))
@@ -157,11 +133,11 @@ function App() {
     setIsConfirmationPopupOpen(false);
     setSelectedCard({});
     setIsSelectedCardOpen(false);
-    setInfoToolTipOpened({ opened: false, text: "", statusImage: "" });
+    setInfoToolTipOpened({ opened: false, text: '', statusImage: '' });
   }
 
   function closeOnEsc(event) {
-    if (event.key === "Escape") {
+    if (event.key === 'Escape') {
       closeAllPopups();
     }
   }
@@ -172,17 +148,18 @@ function App() {
       .then((res) => {
         if (res.token) {
           setLoggedIn(true);
-          localStorage.setItem("token", res.token);
-          history.push("/");
+          localStorage.setItem('token', res.token);
+          setToken(res.token);
+          history.push('/');
           setUserEmail(email);
         } else {
-          throw new Error("Что-то пошло не так");
+          throw new Error('Что-то пошло не так');
         }
       })
       .catch(() => {
         setInfoToolTipOpened({
           opened: true,
-          text: "Что-то пошло не так! Попробуйте ещё раз.",
+          text: 'Что-то пошло не так! Попробуйте ещё раз.',
           statusImage: popupFail,
         });
       });
@@ -194,21 +171,21 @@ function App() {
       .then((res) => {
         if (res) {
           setLoggedIn(true);
-          setUserEmail(res.data.email);
-          history.push("/sign-in");
+          setUserEmail(res.email);
+          history.push('/sign-in');
           setInfoToolTipOpened({
             opened: true,
-            text: "Вы успешно зарегистрировались!",
+            text: 'Вы успешно зарегистрировались!',
             statusImage: popupSucsess,
           });
         } else {
-          throw new Error("Что-то пошло не так");
+          throw new Error('Что-то пошло не так');
         }
       })
       .catch(() =>
         setInfoToolTipOpened({
           opened: true,
-          text: "Что-то пошло не так! Попробуйте ещё раз.",
+          text: 'Что-то пошло не так! Попробуйте ещё раз.',
           statusImage: popupFail,
         })
       );
@@ -216,21 +193,38 @@ function App() {
 
   // Токен
   const onCheckToken = useCallback(() => {
-    checkToken(localStorage.getItem("token"))
+    checkToken(localStorage.getItem('token'))
       .then((res) => {
         if (res) {
-          setUserEmail(res.data.email);
+          setUserEmail(res.email);
+          setToken(token);
           setLoggedIn(true);
-          history.push("/");
-        } else {
-          throw new Error("Вам нужно авторизоваться");
+          history.push('/');
+
+          api
+            .getInitialCards()
+            .then((cards) => {
+              setCards(cards);
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+
+          api
+            .getUserInfo()
+            .then((currentUser) => {
+              setCurrentUser(currentUser);
+            })
+            .catch((err) => {
+              console.error(err);
+            });
         }
       })
       .catch((err) => {
         console.log(`Ошибка ${err}`);
-        history.push("/sign-in");
+        history.push('/sign-in');
       });
-  }, [history]);
+  }, [history, token]);
 
   useEffect(() => {
     onCheckToken();
@@ -238,20 +232,21 @@ function App() {
 
   const handleOnLogout = () => {
     setLoggedIn(false);
-    localStorage.removeItem("token");
-    setUserEmail("");
-    history.push("/sign-in");
+    localStorage.removeItem('token');
+    setToken('');
+    setUserEmail('');
+    history.push('/sign-in');
   };
 
   return (
-    <div className="page">
+    <div className='page'>
       <CurrentUserContext.Provider value={currentUser}>
         <Header userEmail={userEmail} onLogout={handleOnLogout} />
         <Switch>
           <ProtectedRoute
             loggedIn={loggedIn}
             exact
-            path="/"
+            path='/'
             component={Main}
             onEditAvatar={handleEditAvatarClick}
             onEditProfile={handleEditProfileClick}
@@ -262,18 +257,18 @@ function App() {
             onCardDelete={handleCardDelete}
           ></ProtectedRoute>
 
-          <Route path="/sign-up">
+          <Route path='/sign-up'>
             <Register onSignUp={onSignUp} />
           </Route>
-          <Route path="/sign-in">
+          <Route path='/sign-in'>
             <Login onSignIn={onSignIn} />
           </Route>
 
           <Route>
-            {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
+            {loggedIn ? <Redirect to='/' /> : <Redirect to='/sign-in' />}
           </Route>
         </Switch>
-        <div id="card-template" />
+        <div id='card-template' />
 
         {/* попап редактирования профиля */}
         <EditProfilePopup
@@ -303,10 +298,11 @@ function App() {
         <PopupWithForm
           isOpen={isConfirmationPopupOpen}
           onCloseEsc={closeOnEsc}
-          title="Вы уверены?"
-          name="photo_delete"
-          buttonType="confirm-button"
-          buttonName="Да"
+          onClose={closeAllPopups}
+          title='Вы уверены?'
+          name='photo_delete'
+          buttonType='confirm-button'
+          buttonName='Да'
         ></PopupWithForm>
 
         {/* попап картинки */}
@@ -322,7 +318,7 @@ function App() {
           isOpen={isInfoToolTipOpened.opened}
           onClose={() => closeAllPopups()}
           onCloseEsc={closeOnEsc}
-          name={"status"}
+          name={'status'}
           title={isInfoToolTipOpened.text}
           checkImage={isInfoToolTipOpened.statusImage}
         />

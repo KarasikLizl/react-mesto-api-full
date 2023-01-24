@@ -88,20 +88,14 @@ export const deleteLikeCard = (req, res, next) => {
   cardSchema
     .findByIdAndUpdate(
       req.params.cardId,
-      { $addToSet: { likes: req.user._id } },
+      { $pull: { likes: req.user._id } },
       { new: true },
     )
     .orFail(() => {
       throw new Error('IncorrectId');
     })
     .then((card) => {
-      if (card.owner._id.toString() === req.user._id) {
-        cardSchema.deleteOne(card).then(() => {
-          res.status(OK).send({ message: 'Карточка удалена' });
-        });
-      } else {
-        next(new ForbiddenError('Вы не можете удалить чужую карточку'));
-      }
+      res.status(OK).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {

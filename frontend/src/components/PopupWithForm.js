@@ -1,5 +1,5 @@
-import "../index.css";
-import { useEffect } from "react";
+import '../index.css';
+import { useEffect } from 'react';
 
 function PopupWithForm({
   isOpen,
@@ -14,10 +14,10 @@ function PopupWithForm({
 }) {
   useEffect(() => {
     if (isOpen) {
-      document.addEventListener("keydown", onCloseEsc);
+      document.addEventListener('keydown', onCloseEsc);
     }
     return () => {
-      document.removeEventListener("keydown", onCloseEsc);
+      document.removeEventListener('keydown', onCloseEsc);
     };
   }, [isOpen, onCloseEsc]);
 
@@ -27,26 +27,26 @@ function PopupWithForm({
         isOpen ? `popup popup_${name} popup_is_opened` : `popup popup_${name}`
       }
     >
-      <div className="popup__container">
+      <div className='popup__container'>
         <button
           className={`popup__close-button popup__close-button_type__${name}`}
-          type="button"
+          type='button'
           onClick={onClose}
         />
-        <h3 className="popup__title">{title}</h3>
+        <h3 className='popup__title'>{title}</h3>
         <form
           onSubmit={(event) => {
             event.preventDefault();
             onSubmit(event);
           }}
-          method="post"
-          name="profile-edit"
+          method='post'
+          name='profile-edit'
           className={`form form_${name}`}
         >
           {children}
           <button
             className={`form__submit-button form__${buttonType}`}
-            type="submit"
+            type='submit'
           >
             {buttonName}
           </button>
