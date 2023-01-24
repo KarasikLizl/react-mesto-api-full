@@ -10,6 +10,8 @@ import NotFoundError from '../errors/not_found.js';
 import ConflictError from '../errors/conflict.js';
 import NotAuthorizedError from '../errors/unauthorized.js';
 
+const { NODE_ENV, JWT_SECRET } = process.env;
+
 export const getUsers = (req, res, next) => {
   userSchema
     .find({})
@@ -109,7 +111,7 @@ export const login = (req, res, next) => {
             if (!matched) {
               next(new NotAuthorizedError('Неверный email или пароль'));
             } else {
-              const token = jwt.sign({ _id: user._id }, 'super-strong-secret-key', { expiresIn: '7d' });
+              const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
               res.send({ token });
             }
           })

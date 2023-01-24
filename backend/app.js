@@ -17,13 +17,19 @@ import cors from 'cors';
 const __dirname = path.resolve();
 const app = express();
 
-const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
+const { PORT, MONGO_URL } = process.env;
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(cors());
 // Request logger
 app.use(requestLogger);
+
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
 
 //  Not protected
 app.post('/signup', celebrate({

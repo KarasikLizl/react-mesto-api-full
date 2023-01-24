@@ -7,5 +7,5 @@
 ## Запуск проекта
 Необходимые ссылки: 
 - IP 130.193.51.248
-- Frontend effycrush.nomoredomains.rocks
-- Backend api.effycrush.nomoredomains.rocks
+- Frontend https://effycrush.nomoredomains.rocks/
+- Backend https://api.effycrush.nomoredomains.rocks 
