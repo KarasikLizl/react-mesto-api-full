@@ -170,7 +170,7 @@ function App() {
     register(email, password)
       .then((res) => {
         if (res) {
-          setLoggedIn(true);
+          // setLoggedIn(true);
           setUserEmail(res.email);
           history.push('/sign-in');
           setInfoToolTipOpened({
