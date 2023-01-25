@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-escape */
 
-import dotenv from 'dotenv';
+require('dotenv').config();
 import express from 'express';
 import mongoose from 'mongoose';
 import path from 'path';
