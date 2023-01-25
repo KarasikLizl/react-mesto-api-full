@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-escape */
 
-import 'dotenv/config.js'
+import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
 import path from 'path';
@@ -13,6 +13,8 @@ import { auth } from './middlewares/auth.js';
 import { errorHandler } from './middlewares/error-handler.js';
 import { requestLogger, errorLogger } from './middlewares/logger.js';
 import cors from 'cors';
+
+dotenv.config()
 
 const __dirname = path.resolve();
 const app = express();
