@@ -51,16 +51,7 @@ export const getMyProfile = (req, res, next) => {
 };
 
 export const createUser = (req, res, next) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    throw new BadRequestError('Не указан email или пароль');
-  }
-  userSchema.findOne({ email })
-    .then((user) => {
-      if (user) {
-        next(new ConflictError('Этот email уже зарегестрирован'));
-      }
-    });
+  // const { email, password } = req.body;
   bcrypt
     .hash(req.body.password, SOLT_ROUNDS)
     .then((hash) => userSchema.create({
@@ -86,39 +77,28 @@ export const createUser = (req, res, next) => {
           next(new ConflictError('Такой пользователь уже существует'));
         } else next(err);
       }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError('Введены некорректные данные'));
-      } else if (err.code === MONGO_DUPLICATE_ERROR) {
-        next(new ConflictError('Такой пользователь уже существует'));
-      } else next(err);
-    });
+    .catch(next);
 };
 
 export const login = (req, res, next) => {
   const { email, password } = req.body;
-
-  if (!email || !password) {
-    throw new BadRequestError('Проверьте введенные данные');
-  } else {
-    userSchema.findOne({ email }).select('+password')
-      .orFail(() => {
-        next(new NotAuthorizedError('Неверный email или пароль'));
-      })
-      .then((user) => {
-        bcrypt.compare(password, user.password)
-          .then((matched) => {
-            if (!matched) {
-              next(new NotAuthorizedError('Неверный email или пароль'));
-            } else {
-              const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'super-strong-secret-key', { expiresIn: '7d' });
-              res.send({ token });
-            }
-          })
-          .catch((err) => next(err));
-      })
-      .catch(next);
-  }
+  userSchema.findOne({ email }).select('+password')
+    .orFail(() => {
+      next(new NotAuthorizedError('Неверный email или пароль'));
+    })
+    .then((user) => {
+      bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            next(new NotAuthorizedError('Неверный email или пароль'));
+          } else {
+            const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'super-strong-secret-key', { expiresIn: '7d' });
+            res.send({ token });
+          }
+        })
+        .catch((err) => next(err));
+    })
+    .catch(next);
 };
 
 export const updateProfile = (req, res, next) => {
@@ -139,8 +119,7 @@ export const updateProfile = (req, res, next) => {
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 export const updateAvatar = (req, res, next) => {
@@ -163,6 +142,5 @@ export const updateAvatar = (req, res, next) => {
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 };

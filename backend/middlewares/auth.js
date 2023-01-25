@@ -1,8 +1,9 @@
+/* eslint-disable import/prefer-default-export */
 import jwt from 'jsonwebtoken';
 import NotAuthorizedError from '../errors/unauthorized.js';
 
-// eslint-disable-next-line import/prefer-default-export
 const { NODE_ENV, JWT_SECRET } = process.env;
+
 export const auth = (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith('Bearer ')) {
