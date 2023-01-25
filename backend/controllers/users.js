@@ -111,7 +111,7 @@ export const login = (req, res, next) => {
             if (!matched) {
               next(new NotAuthorizedError('Неверный email или пароль'));
             } else {
-              const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
+              const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'super-strong-secret-key', { expiresIn: '7d' });
               res.send({ token });
             }
           })
